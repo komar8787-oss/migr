@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест: Миграция населения России</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --primary-dark: #357abd;
+            --success: #52c41a;
+            --error: #ff4d4f;
+            --bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --border: #e1e8ed;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        main {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            margin-bottom: 16px;
+            color: var(--primary-dark);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        p {
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn:focus-visible {
+            outline: 3px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .btn:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .question-container {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-text {
+            font-size: 1.125rem;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            padding: 16px;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 44px;
+        }
+
+        .option:hover {
+            border-color: var(--primary);
+            background: #e8f4fd;
+        }
+
+        .option:focus-visible {
+            outline: 3px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .option.selected {
+            border-color: var(--primary);
+            background: #e8f4fd;
+            font-weight: 600;
+        }
+
+        .option.correct {
+            border-color: var(--success);
+            background: #f6ffed;
+        }
+
+        .option.incorrect {
+            border-color: var(--error);
+            background: #fff2f0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-bottom: 16px;
+        }
+
+        .result-card {
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .score {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        .feedback {
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-top: 12px;
+            font-size: 0.95rem;
+        }
+
+        .feedback.correct {
+            background: #f6ffed;
+            border-left: 4px solid var(--success);
+        }
+
+        .feedback.incorrect {
+            background: #fff2f0;
+            border-left: 4px solid var(--error);
+        }
+
+        .explanation {
+            margin-top: 8px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .review-section {
+            margin-top: 24px;
+            text-align: left;
+        }
+
+        .review-item {
+            padding: 16px;
+            background: var(--bg);
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+        }
+
+        .review-question {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .review-answer {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .review-answer.correct {
+            color: var(--success);
+        }
+
+        .review-answer.incorrect {
+            color: var(--error);
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-screen p {
+            margin-bottom: 24px;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 480px) {
+            main {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .score {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main id="app"></main>
+
+    <script>
+        // Константы: вопросы теста
+        const QUESTIONS = [
+            {
+                question: "Что такое миграция населения?",
+                options: [
+                    "Естественный прирост населения",
+                    "Перемещение людей через границы территорий",
+                    "Изменение возрастной структуры населения",
+                    "Рост численности населения"
+                ],
+                correct: 1,
+                explanation: "Миграция — это перемещение людей через границы территорий для смены места жительства."
+            },
+            {
+                question: "Какой тип миграции преобладает в современной России?",
+                options: [
+                    "Внешняя эмиграция",
+                    "Внутренняя миграция",
+                    "Маятниковая миграция",
+                    "Сезонная миграция"
+                ],
+                correct: 1,
+                explanation: "В России преобладает внутренняя миграция — переезды внутри страны."
+            },
+            {
+                question: "Какие регионы России являются главными центрами притяжения мигрантов?",
+                options: [
+                    "Сибирь и Дальний Восток",
+                    "Крайний Север",
+                    "Крупные города европейской части России",
+                    "Сельские районы"
+                ],
+                correct: 2,
+                explanation: "Москва, Санкт-Петербург и другие крупные города европейской части привлекают большинство мигрантов."
+            },
+            {
+                question: "Что такое эмиграция?",
+                options: [
+                    "Въезд в страну",
+                    "Выезд из страны",
+                    "Перемещение внутри страны",
+                    "Временная работа за границей"
+                ],
+                correct: 1,
+                explanation: "Эмиграция — это выезд граждан из своей страны в другую для проживания."
+            },
+            {
+                question: "Какова основная причина внутренней миграции в России?",
+                options: [
+                    "Климатические условия",
+                    "Экономические факторы и поиск работы",
+                    "Военные конфликты",
+                    "Экологические катастрофы"
+                ],
+                correct: 1,
+                explanation: "Экономические причины — главная движущая сила внутренней миграции: люди едут туда, где есть работа и выше зарплаты."
+            },
+            {
+                question: "Что такое депопуляция?",
+                options: [
+                    "Рост населения",
+                    "Убывание населения территории",
+                    "Миграционный прирост",
+                    "Естественный прирост"
+                ],
+                correct: 1,
+                explanation: "Депопуляция — это уменьшение численности населения территории из-за оттока мигрантов."
+            },
+            {
+                question: "Какой регион России испытывает наибольший отток населения?",
+                options: [
+                    "Москва",
+                    "Краснодарский край",
+                    "Дальний Восток и некоторые регионы Сибири",
+                    "Санкт-Петербург"
+                ],
+                correct: 2,
+                explanation: "Дальний Восток и ряд сибирских регионов теряют население из-за сурового климата и недостатка рабочих мест."
+            },
+            {
+                question: "Что такое миграционный прирост?",
+                options: [
+                    "Разница между рождаемостью и смертностью",
+                    "Превышение числа прибывших над выбывшими",
+                    "Общее количество мигрантов",
+                    "Ежегодный прирост населения"
+                ],
+                correct: 1,
+                explanation: "Миграционный прирост = число прибывших минус число выбывших за определенный период."
+            },
+            {
+                question: "Какая группа стран является основным источником трудовой миграции в Россию?",
+                options: [
+                    "Страны ЕС",
+                    "Страны СНГ (Средняя Азия, Закавказье)",
+                    "Страны Северной Америки",
+                    "Страны Восточной Азии"
+                ],
+                correct: 1,
+                explanation: "Основной поток трудовых мигрантов в Россию идет из стран СНГ: Узбекистана, Таджикистана, Кыргызстана."
+            },
+            {
+                question: "Что такое вынужденная миграция?",
+                options: [
+                    "Переезд по желанию",
+                    "Перемещение из-за угрозы жизни или преследований",
+                    "Сезонная работа",
+                    "Учебная миграция"
+                ],
+                correct: 1,
+                explanation: "Вынужденная миграция происходит, когда люди покидают свои дома из-за войн, конфликтов или преследований."
+            }
+        ];
+
+        // State: состояние приложения
+        let state = {
+            screen: 'start', // start | quiz | result
+            currentQuestion: 0,
+            answers: [], // массив ответов пользователя
+            selectedOption: null
+        };
+
+        // Render: отрисовка экрана
+        function render() {
+            const app = document.getElementById('app');
+            
+            switch(state.screen) {
+                case 'start':
+                    renderStartScreen(app);
+                    break;
+                case 'quiz':
+                    renderQuizScreen(app);
+                    break;
+                case 'result':
+                    renderResultScreen(app);
+                    break;
+            }
+        }
+
+        // Render: стартовый экран
+        function renderStartScreen(container) {
+            container.innerHTML = `
+                <div class="card start-screen">
+                    <h1>🌍 Миграция населения России</h1>
+                    <p>Йоу! Готов проверить свои знания о миграции? Тут 10 вопросов, базовый уровень. Поехали!</p>
+                    <button class="btn" onclick="startQuiz()" aria-label="Начать тест">Начать тест</button>
+                </div>
+            `;
+        }
+
+        // Render: экран с вопросом
+        function renderQuizScreen(container) {
+            const q = QUESTIONS[state.currentQuestion];
+            const progress = ((state.currentQuestion + 1) / QUESTIONS.length) * 100;
+            
+            container.innerHTML = `
+                <div class="card question-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                    <div class="progress-text">Вопрос ${state.currentQuestion + 1} из ${QUESTIONS.length}</div>
+                    
+                    <div class="question-text">${q.question}</div>
+                    
+                    <div class="options" role="radiogroup" aria-label="Варианты ответов">
+                        ${q.options.map((opt, idx) => `
+                            <div class="option ${state.selectedOption === idx ? 'selected' : ''}" 
+                                 onclick="selectOption(${idx})" 
+                                 role="radio" 
+                                 aria-checked="${state.selectedOption === idx}"
+                                 tabindex="0"
+                                 onkeypress="if(event.key==='Enter')selectOption(${idx})">
+                                ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <button class="btn" 
+                            onclick="nextQuestion()" 
+                            ${state.selectedOption === null ? 'disabled' : ''}
+                            aria-label="${state.currentQuestion === QUESTIONS.length - 1 ? 'Завершить тест' : 'Следующий вопрос'}">
+                        ${state.currentQuestion === QUESTIONS.length - 1 ? 'Завершить' : 'Дальше'}
+                    </button>
+                </div>
+            `;
+        }
+
+        // Render: экран результата
+        function renderResultScreen(container) {
+            const correctCount = state.answers.filter((a, idx) => a === QUESTIONS[idx].correct).length;
+            const percentage = Math.round((correctCount / QUESTIONS.length) * 100);
+            
+            let message = '';
+            if (percentage >= 80) message = 'Красава! Ты реально шаришь! 🔥';
+            else if (percentage >= 60) message = 'Неплохо, но есть куда расти! 💪';
+            else if (percentage >= 40) message = 'Норм, но стоит повторить материал 📚';
+            else message = 'Надо подтянуть тему, не переживай! 🤝';
+
+            container.innerHTML = `
+                <div class="card result-card">
+                    <h1>Результат</h1>
+                    <div class="score">${correctCount}/${QUESTIONS.length}</div>
+                    <p style="font-size: 1.125rem; font-weight: 600;">${message}</p>
+                    <p style="color: var(--text-light);">Правильных ответов: ${percentage}%</p>
+                    
+                    <div class="review-section">
+                        <h2>Разбор ответов</h2>
+                        ${state.answers.map((answer, idx) => {
+                            const q = QUESTIONS[idx];
+                            const isCorrect = answer === q.correct;
+                            return `
+                                <div class="review-item">
+                                    <div class="review-question">${idx + 1}. ${q.question}</div>
+                                    <div class="review-answer ${isCorrect ? 'correct' : 'incorrect'}">
+                                        ${isCorrect ? '✓' : '✗'} Твой ответ: ${q.options[answer]}
+                                    </div>
+                                    ${!isCorrect ? `
+                                        <div class="review-answer correct">
+                                            ✓ Правильный ответ: ${q.options[q.correct]}
+                                        </div>
+                                    ` : ''}
+                                    <div class="explanation">${q.explanation}</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    
+                    <button class="btn" onclick="restartQuiz()" style="margin-top: 20px;" aria-label="Пройти тест заново">
+                        Пройти заново
+                    </button>
+                </div>
+            `;
+        }
+
+        // Handlers: обработчики событий
+        function startQuiz() {
+            state.screen = 'quiz';
+            state.currentQuestion = 0;
+            state.answers = [];
+            state.selectedOption = null;
+            render();
+        }
+
+        function selectOption(idx) {
+            state.selectedOption = idx;
+            render();
+        }
+
+        function nextQuestion() {
+            if (state.selectedOption === null) return;
+            
+            state.answers.push(state.selectedOption);
+            state.selectedOption = null;
+            
+            if (state.currentQuestion < QUESTIONS.length - 1) {
+                state.currentQuestion++;
+                render();
+            } else {
+                state.screen = 'result';
+                render();
+            }
+        }
+
+        function restartQuiz() {
+            state.screen = 'start';
+            state.currentQuestion = 0;
+            state.answers = [];
+            state.selectedOption = null;
+            render();
+        }
+
+        // Init: инициализация
+        function init() {
+            render();
+        }
+
+        // Запуск
+        init();
+    </script>
+</body>
+</html>
